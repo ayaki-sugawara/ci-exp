@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - 'sprint-*'
-
 jobs:
   sprint:
     runs-on: ubuntu-latest
