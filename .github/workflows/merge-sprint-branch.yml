@@ -115,8 +115,8 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'open',
-              base: context.ref,
-              head: ret.data[0].ref,
+              base: ret.data[0].ref,
+              head: context.ref,
             });
             if (pulls.length > 0) {
               return;
@@ -126,7 +126,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: `Sprint ${matches[1]} to ${nextSprint}`,
-              base: context.ref,
-              head: ret.data[0].ref,
+              base: ret.data[0].ref,
+              head: context.ref,
               body: 'Automatically created pull request',
             });
