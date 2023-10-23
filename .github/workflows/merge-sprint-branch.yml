@@ -5,7 +5,7 @@ on:
     branches:
       - 'sprint-*'
 jobs:
-  sprint:
+  sprint_to_dev:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -17,13 +17,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { data } = await github.rest.repos.compareCommits({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              base: 'dev',
-              head: context.ref,
-            });
-            
             const { data: pulls } = await github.rest.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -50,3 +43,84 @@ jobs:
               head: context.ref,
               body: 'Automatically created pull request',
             });
+  
+  sprint_to_test:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Create Pull Request
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              base: 'test',
+              head: context.ref,
+            });
+            if (pulls.length > 0) {
+              return;
+            }
+
+            const regex = /sprint-(\d+)/;
+            const matches = context.ref.match(regex);
+
+            if (!matches) {
+              return;
+            } 
+
+            await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Sprint ${matches[1]} to test`,
+              base: 'test',
+              head: context.ref,
+              body: 'Automatically created pull request',
+            });
+
+  update_next_sprint:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Create Pull Request
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            //const { data: pulls } = await github.rest.pulls.list({
+            //  owner: context.repo.owner,
+            //  repo: context.repo.repo,
+            //  state: 'open',
+            //  base: 'dev',
+            //  head: context.ref,
+            //});
+            //if (pulls.length > 0) {
+            //  return;
+            //}
+
+            const regex = /sprint-(\d+)/;
+            const matches = context.ref.match(regex);
+
+            if (!matches) {
+              return;
+            } 
+
+            const nextSprint = parseInt(matches[1]) + 1;
+            console.log(nextSprint)
+
+            //await github.rest.pulls.create({
+            //  owner: context.repo.owner,
+            //  repo: context.repo.repo,
+            //  title: `Sprint ${nextSprint}`,
+            //  base: 'dev',
+            //  head: `sprint-${nextSprint}`,
+            //  body: 'Automatically created pull request',
+            //});
