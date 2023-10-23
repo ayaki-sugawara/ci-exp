@@ -1,21 +1,21 @@
-name: test
+# name: test
 
-on:
-  push:
-    branches:
-      - 'sprint-*'
+# on:
+#   push:
+#     branches:
+#       - 'sprint-*'
 
-jobs:
-  sprint:
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-      pull-requests: write
-    steps:
-      - name: Create Pull Request
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            console.log("Creating Pull Request");
+# jobs:
+#   sprint:
+#     runs-on: ubuntu-latest
+#     permissions:
+#       id-token: write
+#       contents: read
+#       pull-requests: write
+#     steps:
+#       - name: Create Pull Request
+#         uses: actions/github-script@v6
+#         with:
+#           github-token: ${{ secrets.GITHUB_TOKEN }}
+#           script: |
+#             console.log("Creating Pull Request");
