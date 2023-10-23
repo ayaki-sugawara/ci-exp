@@ -108,13 +108,21 @@ jobs:
 
             const regex = /sprint-(\d+)/;
             const matches = context.ref.match(regex);
-
             if (!matches) {
               return;
             } 
-
             const nextSprint = parseInt(matches[1]) + 1;
             console.log(nextSprint)
+
+
+            const ret = await github.rest.git.listMatchingRefs({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `heads/sprint-${nextSprint}`,
+            });
+
+            console.log(ret)
+
 
             //await github.rest.pulls.create({
             //  owner: context.repo.owner,
