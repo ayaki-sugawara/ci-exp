@@ -4,12 +4,6 @@ on:
   push:
     branches:
       - 'sprint-*'
-#   workflow_dispatch:
-    # inputs:
-    #   branch:
-    #     description: 'Branch name'
-    #     required: true
-    #     default: 'sprint-1'
 
 jobs:
   sprint:
@@ -24,46 +18,4 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            echo "hello"
-#   create_pr_to_dev:
-#     runs-on: ubuntu-latest
-#     if: github.ref == 'refs/heads/stg'
-#     permissions:
-#       id-token: write
-#       contents: read
-#       pull-requests: write
-#     steps:
-#       - name: Create Pull Request
-#         uses: actions/github-script@v6
-#         with:
-#           github-token: ${{ secrets.GITHUB_TOKEN }}
-#           script: |
-#             const { data: { status, ahead_by, behind_by, total_commits } } = await github.rest.repos.compareCommits({
-#               owner: context.repo.owner,
-#               repo: context.repo.repo,
-#               base: 'test',
-#               head: 'stg',
-#             });
-#             if (ahead_by <= 1) {
-#               return;
-#             }
-
-#             const { data: pulls } = await github.rest.pulls.list({
-#               owner: context.repo.owner,
-#               repo: context.repo.repo,
-#               state: 'open',
-#               base: 'test',
-#               head: 'medical-force:stg',
-#             });
-#             if (pulls.length > 0) {
-#               return;
-#             }
-
-#             await github.rest.pulls.create({
-#               owner: context.repo.owner,
-#               repo: context.repo.repo,
-#               title: 'STG to TEST',
-#               base: 'test',
-#               head: 'stg',
-#               body: 'Automatically created pull request',
-#             });
+            echo "hello world"
