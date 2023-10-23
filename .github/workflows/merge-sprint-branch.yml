@@ -18,13 +18,11 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { data: { status, ahead_by, behind_by, total_commits } } = await github.rest.repos.compareCommits({
+            const { data } = await github.rest.repos.compareCommits({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              base: 'stg',
-              head: 'prod',
+              base: 'dev',
+              head: context.ref,
             });
-            console.log(context)
-            if (ahead_by <= 1) {
-              return;
-            }
+            
+            console.log(data)
