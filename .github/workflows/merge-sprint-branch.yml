@@ -18,4 +18,13 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            console.log("Creating Pull Request in sprint branch");
+            const { data: { status, ahead_by, behind_by, total_commits } } = await github.rest.repos.compareCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              base: 'stg',
+              head: 'prod',
+            });
+            console.log(context)
+            if (ahead_by <= 1) {
+              return;
+            }
