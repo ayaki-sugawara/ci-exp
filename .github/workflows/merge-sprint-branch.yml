@@ -95,40 +95,38 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            //const { data: pulls } = await github.rest.pulls.list({
-            //  owner: context.repo.owner,
-            //  repo: context.repo.repo,
-            //  state: 'open',
-            //  base: 'dev',
-            //  head: context.ref,
-            //});
-            //if (pulls.length > 0) {
-            //  return;
-            //}
-
             const regex = /sprint-(\d+)/;
             const matches = context.ref.match(regex);
             if (!matches) {
               return;
             } 
             const nextSprint = parseInt(matches[1]) + 1;
-            console.log(nextSprint)
-
 
             const ret = await github.rest.git.listMatchingRefs({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: `heads/sprint-${nextSprint}`,
             });
+            if (ret.data.length == 0) {
+              return;
+            }
 
-            console.log(ret)
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              base: context.ref,
+              head: data[0].ref,
+            });
+            if (pulls.length > 0) {
+              return;
+            }
 
-
-            //await github.rest.pulls.create({
-            //  owner: context.repo.owner,
-            //  repo: context.repo.repo,
-            //  title: `Sprint ${nextSprint}`,
-            //  base: 'dev',
-            //  head: `sprint-${nextSprint}`,
-            //  body: 'Automatically created pull request',
-            //});
+            await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Sprint ${matches[1]} to ${nextSprint}`,
+              base: context.ref,
+              head: data[0].ref,
+              body: 'Automatically created pull request',
+            });
