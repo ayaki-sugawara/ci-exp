@@ -25,4 +25,29 @@ jobs:
               head: context.ref,
             });
             
-            console.log(data)
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              base: 'dev',
+              head: context.ref,
+            });
+            if (pulls.length > 0) {
+              return;
+            }
+
+            const regex = /sprint-(\d+)/;
+            const matches = text.match(regex);
+
+            if (!matches) {
+              return;
+            } 
+
+            await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Sprint ${matches[1]} to dev`,
+              base: 'dev',
+              head: context.ref,
+              body: 'Automatically created pull request',
+            });
