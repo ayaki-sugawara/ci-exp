@@ -41,7 +41,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: `Sprint ${matches[1]} to dev`,
-              base: 'refs/heads/dev',
+              base: 'dev',
               head: `ayaki-sugawara:${context.ref}`,
               body: 'Automatically created pull request',
             });
@@ -62,8 +62,8 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'open',
-              base: 'refs/heads/test',
-              head: context.ref,
+              base: 'test',
+              head:  `ayaki-sugawara:${context.ref}`,
             });
             console.log(pulls)
             if (pulls.length > 0) {
@@ -81,8 +81,8 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: `Sprint ${matches[1]} to test`,
-              base: 'refs/heads/test',
-              head: context.ref,
+              base: 'test',
+              head:  `ayaki-sugawara:${context.ref}`,
               body: 'Automatically created pull request',
             });
 
@@ -120,7 +120,7 @@ jobs:
               repo: context.repo.repo,
               state: 'open',
               base: ret.data[0].ref,
-              head: context.ref,
+              head:  `ayaki-sugawara:${context.ref}`,
             });
             if (pulls.length > 0) {
               return;
@@ -131,6 +131,6 @@ jobs:
               repo: context.repo.repo,
               title: `Sprint ${matches[1]} to ${nextSprint}`,
               base: ret.data[0].ref,
-              head: context.ref,
+              head:  `ayaki-sugawara:${context.ref}`,
               body: 'Automatically created pull request',
             });
