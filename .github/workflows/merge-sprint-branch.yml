@@ -23,7 +23,7 @@ jobs:
               repo: context.repo.repo,
               state: 'open',
               base: 'dev',
-              head: ayaki-sugawara:context.ref,
+              head: `ayaki-sugawara:${context.ref}`,
             });
             console.log(pulls)
             if (pulls.length > 0) {
@@ -42,7 +42,7 @@ jobs:
               repo: context.repo.repo,
               title: `Sprint ${matches[1]} to dev`,
               base: 'refs/heads/dev',
-              head: ayaki-sugawara:context.ref,
+              head: `ayaki-sugawara:${context.ref}`,
               body: 'Automatically created pull request',
             });
   
