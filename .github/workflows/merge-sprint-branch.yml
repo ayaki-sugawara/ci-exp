@@ -1,0 +1,136 @@
+name: test
+
+on:
+  push:
+    branches:
+      - 'sprint-*'
+jobs:
+  sprint_to_dev:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Create Pull Request
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            console.log(context)
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              base: 'dev',
+              head: `ayaki-sugawara:${context.ref}`,
+            });
+            console.log(pulls)
+            if (pulls.length > 0) {
+              return;
+            }
+
+            const regex = /sprint-(\d+)/;
+            const matches = context.ref.match(regex);
+
+            if (!matches) {
+              return;
+            } 
+
+            await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Sprint ${matches[1]} to dev`,
+              base: 'dev',
+              head: context.ref,
+              body: 'Automatically created pull request',
+            });
+  
+  sprint_to_test:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Create Pull Request
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              base: 'test',
+              head:  `ayaki-sugawara:${context.ref}`,
+            });
+            console.log(pulls)
+            if (pulls.length > 0) {
+              return;
+            }
+
+            const regex = /sprint-(\d+)/;
+            const matches = context.ref.match(regex);
+
+            if (!matches) {
+              return;
+            } 
+
+            await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Sprint ${matches[1]} to test`,
+              base: 'test',
+              head:  context.ref,
+              body: 'Automatically created pull request',
+            });
+
+  update_next_sprint:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Create Pull Request
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const regex = /sprint-(\d+)/;
+            const matches = context.ref.match(regex);
+            if (!matches) {
+              return;
+            } 
+            const nextSprint = parseInt(matches[1]) + 1;
+
+            const ret = await github.rest.git.listMatchingRefs({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `heads/sprint-${nextSprint}`,
+            });
+            if (ret.data.length == 0) {
+              return;
+            }
+            console.log(ret.data[0])
+
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              base: ret.data[0].ref,
+              head:  `ayaki-sugawara:${context.ref}`,
+            });
+            if (pulls.length > 0) {
+              return;
+            }
+
+            await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Sprint ${matches[1]} to ${nextSprint}`,
+              base: ret.data[0].ref,
+              head:  context.ref,
+              body: 'Automatically created pull request',
+            });
