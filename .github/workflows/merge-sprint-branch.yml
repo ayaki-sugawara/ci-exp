@@ -42,7 +42,7 @@ jobs:
               repo: context.repo.repo,
               title: `Sprint ${matches[1]} to dev`,
               base: 'dev',
-              head: context.ref`,
+              head: context.ref,
               body: 'Automatically created pull request',
             });
   
@@ -82,7 +82,7 @@ jobs:
               repo: context.repo.repo,
               title: `Sprint ${matches[1]} to test`,
               base: 'test',
-              head:  context.ref`,
+              head:  context.ref,
               body: 'Automatically created pull request',
             });
 
@@ -131,6 +131,6 @@ jobs:
               repo: context.repo.repo,
               title: `Sprint ${matches[1]} to ${nextSprint}`,
               base: ret.data[0].ref,
-              head:  context.ref`,
+              head:  context.ref,
               body: 'Automatically created pull request',
             });
