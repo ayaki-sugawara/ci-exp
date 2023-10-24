@@ -21,9 +21,10 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'open',
-              base: 'dev',
+              base: 'heads/dev',
               head: context.ref,
             });
+            console.log(pulls)
             if (pulls.length > 0) {
               return;
             }
@@ -63,6 +64,7 @@ jobs:
               base: 'test',
               head: context.ref,
             });
+            console.log(pulls)
             if (pulls.length > 0) {
               return;
             }
